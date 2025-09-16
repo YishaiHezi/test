@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Share PDF Test</title>
+</head>
+<body>
+<h2>Share PDF Test</h2>
+
+<button onclick="sharePdf()">Share PDF</button>
+
+<script>
+    async function sharePdf() {
+      // Minimal PDF bytes for testing
+      const pdfContent = new Uint8Array([37,80,68,70,45,49,46,52,10]); // %PDF-1.4
+      const pdfBlob = new Blob([pdfContent], { type: 'application/pdf' });
+      const pdfFile = new File([pdfBlob], "test.pdf", { type: "application/pdf" });
+
+      // Check if Web Share API is supported
+      if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+        try {
+          await navigator.share({
+            files: [pdfFile],
+            title: "Share PDF",
+            text: "Check out this PDF!",
+          });
+          console.log("PDF shared successfully!");
+        } catch (err) {
+          console.error("Share failed:", err);
+        }
+      } else {
+        // Fallback: open Chrome via intent
+        const chromeIntent = `intent:${window.location.href}#Intent;package=com.android.chrome;end`;
+        window.location.href = chromeIntent;
+      }
+    }
+</script>
+</body>
+</html>
