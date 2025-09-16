@@ -12,7 +12,19 @@
 <script>
     async function sharePdf() {
       // Minimal PDF bytes for testing
-      const pdfContent = new Uint8Array([37,80,68,70,45,49,46,52,10]); // %PDF-1.4
+      const pdfContent = new Uint8Array([
+  37,80,68,70,45,49,46,52,10,          // %PDF-1.4
+  49,32,48,32,111,98,106,10,           // 1 0 obj
+  60,60,62,62,10,                       // <<
+  101,110,100,111,98,106,10,            // endobj
+  10,49,32,48,32,111,98,106,10,
+  60,60,62,62,10,
+  101,110,100,111,98,106,10,
+  10,49,32,48,32,111,98,106,10,
+  60,60,62,62,10,
+  101,110,100,111,98,106,10,
+  10, // add more lines if needed
+]);
       const pdfBlob = new Blob([pdfContent], { type: 'application/pdf' });
       const pdfFile = new File([pdfBlob], "test.pdf", { type: "application/pdf" });
 
