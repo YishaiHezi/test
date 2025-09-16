@@ -1,51 +1,37 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>Share PDF Test</title>
+  <meta charset="UTF-8">
+  <title>Share PDF Test</title>
 </head>
 <body>
-<h2>Share PDF Test</h2>
+  <h2>Share PDF Example</h2>
+  <button onclick="onShareClick()">Share PDF test 1</button>
 
-<button onclick="sharePdf()">Share PDF 3!</button>
-
-<script>
-    async function sharePdf() {
-      // Minimal PDF bytes for testing
-      const pdfContent = new Uint8Array([
-  37,80,68,70,45,49,46,52,10,          // %PDF-1.4
-  49,32,48,32,111,98,106,10,           // 1 0 obj
-  60,60,62,62,10,                       // <<
-  101,110,100,111,98,106,10,            // endobj
-  10,49,32,48,32,111,98,106,10,
-  60,60,62,62,10,
-  101,110,100,111,98,106,10,
-  10,49,32,48,32,111,98,106,10,
-  60,60,62,62,10,
-  101,110,100,111,98,106,10,
-  10, // add more lines if needed
-]);
-      const pdfBlob = new Blob([pdfContent], { type: 'application/pdf' });
-      const pdfFile = new File([pdfBlob], "test.pdf", { type: "application/pdf" });
-
-      // Check if Web Share API is supported
-      if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+  <script>
+    async function sharePdf(pdfBlob, filename) {
+      if (navigator.canShare && navigator.canShare({ files: [new File([pdfBlob], filename, { type: 'application/pdf' })] })) {
         try {
           await navigator.share({
-            files: [pdfFile],
-            title: "Share PDF",
-            text: "Check out this PDF!",
+            files: [new File([pdfBlob], filename, { type: 'application/pdf' })],
+            title: 'Share PDF',
+            text: 'Check out this PDF!',
           });
-          console.log("PDF shared successfully!");
-        } catch (err) {
-          console.error("Share failed:", err);
+          console.log('PDF shared successfully!');
+        } catch (error) {
+          console.error('Error sharing PDF:', error);
         }
       } else {
-        // Fallback: open Chrome via intent
-        const chromeIntent = `intent:https://yishaihezi.github.io/test/share.html#Intent;package=com.android.chrome;end`;
-        window.location.href = chromeIntent;
+        console.warn('Web Share API not supported or cannot share files.');
       }
     }
-</script>
+
+    function onShareClick() {
+      // Minimal valid PDF header (not a full PDF, but works for testing)
+      const pdfBytes = new Uint8Array([0x25,0x50,0x44,0x46,0x2D,0x31,0x2E,0x34,0x0A]); // %PDF-1.4\n
+      const pdfBlob = new Blob([pdfBytes], { type: 'application/pdf' });
+      sharePdf(pdfBlob, 'test.pdf');
+    }
+  </script>
 </body>
 </html>
