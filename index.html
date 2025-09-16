@@ -1,37 +1,52 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Share PDF Test</title>
+  <title>Web Share API Test</title>
 </head>
 <body>
-  <h2>Share PDF Example</h2>
-  <button onclick="onShareClick()">Share PDF test 1</button>
+  <h1>Web Share API Test</h1>
+  <button id="shareBtn">Share Something</button>
+  <pre id="log"></pre>
 
   <script>
-    async function sharePdf(pdfBlob, filename) {
-      if (navigator.canShare && navigator.canShare({ files: [new File([pdfBlob], filename, { type: 'application/pdf' })] })) {
-        try {
-          await navigator.share({
-            files: [new File([pdfBlob], filename, { type: 'application/pdf' })],
-            title: 'Share PDF',
-            text: 'Check out this PDF!',
-          });
-          console.log('PDF shared successfully!');
-        } catch (error) {
-          console.error('Error sharing PDF:', error);
-        }
-      } else {
-        console.warn('Web Share API not supported or cannot share files.');
-      }
-    }
+    const log = (msg) => {
+      document.getElementById("log").textContent += msg + "\n";
+    };
 
-    function onShareClick() {
-      // Minimal valid PDF header (not a full PDF, but works for testing)
-      const pdfBytes = new Uint8Array([0x25,0x50,0x44,0x46,0x2D,0x31,0x2E,0x34,0x0A]); // %PDF-1.4\n
-      const pdfBlob = new Blob([pdfBytes], { type: 'application/pdf' });
-      sharePdf(pdfBlob, 'test.pdf');
-    }
+    const shareData = {
+      title: "My Website",
+      text: "Check this out!",
+      url: "https://example.com"
+    };
+
+    const btn = document.getElementById("shareBtn");
+
+    btn.addEventListener("click", async () => {
+      log("Clicked share button.");
+
+      if (!navigator.share) {
+        log("❌ navigator.share is NOT available in this browser.");
+        return;
+      } else {
+        log("✅ navigator.share is available.");
+      }
+
+      if (navigator.canShare) {
+        log("navigator.canShare exists.");
+        const supported = navigator.canShare(shareData);
+        log("navigator.canShare(shareData) returned: " + supported);
+      } else {
+        log("❌ navigator.canShare does not exist in this browser.");
+      }
+
+      try {
+        await navigator.share(shareData);
+        log("✅ Share successful!");
+      } catch (err) {
+        log("⚠️ Share failed or was canceled: " + err.message);
+      }
+    });
   </script>
 </body>
 </html>
