@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Auto Share PDF</title>
+</head>
+<body>
+<h2>Preparing PDF to share...</h2>
+
+<script>
+    async function sharePdf() {
+      const pdfContent = new Uint8Array([37,80,68,70,45,49,46,52,10]); // %PDF-1.4
+      const pdfBlob = new Blob([pdfContent], { type: 'application/pdf' });
+      const pdfFile = new File([pdfBlob], "test.pdf", { type: "application/pdf" });
+
+      if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+        try {
+          await navigator.share({
+            files: [pdfFile],
+            title: "Share PDF",
+            text: "Check out this PDF!",
+          });
+          console.log("PDF shared successfully!");
+        } catch (err) {
+          console.error("Share failed:", err);
+        }
+      } else {
+        alert("Your browser does not support sharing files.");
+      }
+    }
+
+    // Auto-run on page load
+    window.onload = sharePdf;
+</script>
+</body>
+</html>
